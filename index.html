@@ -1,85 +1,163 @@
-
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Unité 555 AI – وحدة النماذج</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #0d0d0d; color: #eee; padding: 20px; text-align: center; }
-    h2 { color: #00ffcc; }
-    select, textarea, button { width: 90%; margin-top: 10px; padding: 10px; font-size: 1em; border-radius: 5px; border: none; }
-    select { background-color: #1a1a1a; color: #eee; }
-    textarea { background-color: #222; color: #eee; }
-    button { background-color: #00cc88; color: white; cursor: pointer; }
-    button:hover { background-color: #009966; }
-    #response { margin-top: 20px; white-space: pre-wrap; background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: left; direction: ltr; }
-    .category { color: #aaa; font-size: 0.9em; margin-top: 20px; }
-  </style>
+<style>
+/* ستايل عام لجميع المودالات */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: modalOpen 0.3s;
+}
+
+@keyframes modalOpen {
+    from {transform: scale(0.8); opacity: 0;}
+    to {transform: scale(1); opacity: 1;}
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+.modal-header {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-body {
+    padding: 15px 0;
+}
+
+.modal-footer {
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+.btn {
+    padding: 8px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+</style>
 </head>
 <body>
-  <h2>Unité 555 AI</h2>
-  <p>اختر مودال وأدخل سؤالك الذكي:</p>
 
-  <div class="category">المودالات المجانية:</div>
-  <select id="model">
-    <option value="meta-llama/llama-4-maverick:free">LLaMA 4 Maverick</option>
-    <option value="deepseek/deepseek-prover-v2:free">DeepSeek Prover V2</option>
-    <option value="nousresearch/deephermes-3-llama-3-8b-preview:free">DeepHermes LLaMA 3</option>
-    <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral 3.1 24B</option>
-  </select>
+<!-- أزرار فتح المودالات -->
+<button onclick="openModal('modal1')" class="btn btn-primary">فتح المودال 1</button>
+<button onclick="openModal('modal2')" class="btn btn-primary">فتح المودال 2</button>
+<button onclick="openModal('modal3')" class="btn btn-primary">فتح المودال 3</button>
 
-  <div class="category">المودالات المدفوعة:</div>
-  <select id="modelPremium">
-    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-    <option value="google/gemini-2.5-pro-preview">Gemini 2.5 Pro</option>
-    <option value="anthropic/claude-3-opus:beta">Claude 3 Opus</option>
-    <option value="anthropic/claude-3.7-sonnet:thinking">Claude 3.7 Sonnet</option>
-  </select>
+<!-- المودال الأول -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('modal1')">&times;</span>
+            <h2>مودال بسيط</h2>
+        </div>
+        <div class="modal-body">
+            <p>هذا محتوى المودال الأول. يمكنك إضافة أي محتوى هنا!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('modal1')">إغلاق</button>
+            <button class="btn btn-primary">حفظ التغييرات</button>
+        </div>
+    </div>
+</div>
 
-  <textarea id="prompt" rows="5" placeholder="أكتب سؤالك هنا..."></textarea>
-  <button onclick="sendPrompt()">إرسال</button>
+<!-- المودال الثاني -->
+<div id="modal2" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('modal2')">&times;</span>
+            <h2>مودال تحذير</h2>
+        </div>
+        <div class="modal-body">
+            <p style="color: #dc3545;">⚠️ تنبيه! هذا إجراء مهم.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('modal2')">إلغاء</button>
+            <button class="btn btn-primary">موافق</button>
+        </div>
+    </div>
+</div>
 
-  <div id="response"></div>
+<!-- المودال الثالث -->
+<div id="modal3" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('modal3')">&times;</span>
+            <h2>مودال نجمة ⭐</h2>
+        </div>
+        <div class="modal-body">
+            <p>هذا المودال يحتوي على رموز خاصة: ★ ☆ ✔ ✘</p>
+            <p>يمكنك تخصيص التصميم كما تشاء!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('modal3')">إغلاق</button>
+        </div>
+    </div>
+</div>
 
-  <script>
-    async function sendPrompt() {
-      const modelFree = document.getElementById('model').value;
-      const modelPremium = document.getElementById('modelPremium').value;
-      const prompt = document.getElementById('prompt').value;
-      const apiKey = "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";
-      const responseDiv = document.getElementById('response');
+<script>
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = "block";
+}
 
-      responseDiv.innerHTML = "جاري الإرسال...";
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+}
 
-      const models = [modelFree, modelPremium];
-      let fullResponse = "";
+// إغلاق المودال عند النقر خارج المحتوى
+window.onclick = function(event) {
+    document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    });
+};
+</script>
 
-      for (const model of models) {
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.8
-          })
-        });
-
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "ما فماش رد.";
-        fullResponse += `
-
-[${model}]:
-` + reply;
-      }
-
-      responseDiv.innerHTML = fullResponse;
-    }
-  </script>
 </body>
 </html>
-          
