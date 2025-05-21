@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Unité 555 - الذكاء الصناعي</title>
+  <style>
+    body { background: #111; color: #eee; font-family: Tahoma, sans-serif; padding: 20px; }
+    h1 { text-align: center; color: #0ff; }
+    select, textarea, button, input[type="file"] {
+      width: 100%; margin: 10px 0; padding: 10px; font-size: 16px;
+    }
+    #response { background: #222; padding: 15px; margin-top: 15px; white-space: pre-wrap; border-radius: 8px; border: 1px solid #444; }
+  </style>
+</head>
+<body>
+
+<h1>Unité 555 - واجهة الذكاء الصناعي</h1>
+
+<label>اختر المودال:</label>
+<select id="model">
+  <option value="meta-llama/llama-3.3-8b-instruct">LLaMA 3.3 8B (Free)</option>
+  <option value="nousresearch/deephermes-3-mistral-24b-preview">DeepHermes 24B (Free)</option>
+  <option value="deepseek/deepseek-prover-v2">DeepSeek Prover (Free)</option>
+  <option value="qwen/qwen3-32b">Qwen 3 32B (Free)</option>
+  <option value="google/gemma-3n-e4b-it">Gemma 3N (Free)</option>
+  <option value="qwen/qwen-turbo">Qwen Turbo (Paid)</option>
+  <option value="openai/gpt-4o-mini">GPT-4o Mini (Paid)</option>
+  <option value="anthropic/claude-3-opus">Claude 3 Opus (Paid)</option>
+  <option value="anthropic/claude-3.7-sonnet">Claude 3.7 Sonnet (Paid)</option>
+  <option value="google/gemini-2.5-pro-preview">Gemini 2.5 Pro (Paid)</option>
+</select>
+
+<textarea id="prompt" placeholder="اكتب سؤالك هنا..." rows="5"></textarea>
+<button onclick="sendPrompt()">إرسال</button>
+<input type="file" id="fileInput">
+<div id="response"></div>
+<button onclick="copyResponse()">📋 نسخ الرد</button>
+<button onclick="saveResponse()">💾 حفظ الرد</button>
+
+<script>
+const apiKeys = {
+  "meta-llama/llama-3.3-8b-instruct": "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",
+  "nousresearch/deephermes-3-mistral-24b-preview": "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",
+  "deepseek/deepseek-prover-v2": "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",
+  "qwen/qwen3-32b": "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",
+  "google/gemma-3n-e4b-it": "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",
+  "qwen/qwen-turbo": "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",
+  "openai/gpt-4o-mini": "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",
+  "anthropic/claude-3-opus": "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",
+  "anthropic/claude-3.7-sonnet": "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",
+  "google/gemini-2.5-pro-preview": "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"
+};
+
+let history = [];
+
+async function sendPrompt() {
+  const model = document.getElementById("model").value;
+  const prompt = document.getElementById("prompt").value;
+  const key = apiKeys[model];
+  if (!prompt) return;
+
+  history.push({ role: "user", content: prompt });
+
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${key}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: history
+    })
+  });
+  const data = await res.json();
+  const content = data.choices[0].message.content;
+  history.push({ role: "assistant", content });
+  document.getElementById("response").innerText = content;
+}
+
+function copyResponse() {
+  const text = document.getElementById("response").innerText;
+  navigator.clipboard.writeText(text);
+  alert("تم نسخ الرد.");
+}
+
+function saveResponse() {
+  const text = document.getElementById("response").innerText;
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "response.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
