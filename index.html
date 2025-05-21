@@ -1,100 +1,482 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Unité 555 - الذكاء الصناعي</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unité 555 - منصة الذكاء الاصطناعي المتقدمة</title>
   <style>
-    body { background: #111; color: #eee; font-family: Tahoma, sans-serif; padding: 20px; }
-    h1 { text-align: center; color: #0ff; }
-    select, textarea, button, input[type="file"] {
-      width: 100%; margin: 10px 0; padding: 10px; font-size: 16px;
+    :root {
+      --primary: #0ff;
+      --secondary: #0af;
+      --dark: #111;
+      --darker: #0a0a0a;
+      --light: #eee;
+      --gray: #444;
+      --success: #4CAF50;
+      --warning: #FFC107;
     }
-    #response { background: #222; padding: 15px; margin-top: 15px; white-space: pre-wrap; border-radius: 8px; border: 1px solid #444; }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--darker), var(--dark));
+      color: var(--light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      position: relative;
+      padding-bottom: 15px;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    
+    .model-selector {
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .model-selector label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    select, textarea, button, input[type="file"] {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid var(--gray);
+      background-color: rgba(0, 0, 0, 0.3);
+      color: var(--light);
+      transition: all 0.3s ease;
+    }
+    
+    select:focus, textarea:focus, input[type="file"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
+    }
+    
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      padding: 12px;
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .button-group button {
+      flex: 1;
+    }
+    
+    #response {
+      background: rgba(20, 20, 20, 0.7);
+      padding: 20px;
+      margin-top: 25px;
+      border-radius: 8px;
+      border: 1px solid var(--gray);
+      min-height: 100px;
+      white-space: pre-wrap;
+      line-height: 1.8;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .file-input-container {
+      position: relative;
+      margin: 15px 0;
+    }
+    
+    .file-input-label {
+      display: block;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed var(--gray);
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .file-input-label:hover {
+      border-color: var(--primary);
+      background: rgba(0, 0, 0, 0.4);
+    }
+    
+    #fileInput {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+    }
+    
+    .status {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 14px;
+      color: var(--primary);
+      min-height: 20px;
+    }
+    
+    .model-info {
+      font-size: 14px;
+      color: var(--gray);
+      margin-top: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .model-info span {
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    .paid {
+      color: var(--warning);
+    }
+    
+    .free {
+      color: var(--success);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+    }
+    
+    /* Animation */
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+    
+    .loading {
+      animation: pulse 1.5s infinite;
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Unité 555 - منصة الذكاء الاصطناعي المتقدمة</h1>
+    
+    <div class="model-selector">
+      <label for="model">اختر نموذج الذكاء الاصطناعي:</label>
+      <select id="model">
+        <option value="meta-llama/llama-3.3-8b-instruct">LLaMA 3.3 8B</option>
+        <option value="nousresearch/deephermes-3-mistral-24b-preview">DeepHermes 24B</option>
+        <option value="deepseek/deepseek-prover-v2">DeepSeek Prover</option>
+        <option value="qwen/qwen3-32b">Qwen 3 32B</option>
+        <option value="google/gemma-3n-e4b-it">Gemma 3N</option>
+        <option value="qwen/qwen-turbo">Qwen Turbo</option>
+        <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+        <option value="anthropic/claude-3-opus">Claude 3 Opus</option>
+        <option value="anthropic/claude-3.7-sonnet">Claude 3.7 Sonnet</option>
+        <option value="google/gemini-2.5-pro-preview">Gemini 2.5 Pro</option>
+      </select>
+      <div class="model-info">
+        <span id="model-type">مجاني</span>
+        <span id="model-size">الحجم: 8B</span>
+      </div>
+    </div>
+    
+    <label for="prompt">اكتب استفسارك أو طلبك هنا:</label>
+    <textarea id="prompt" placeholder="مرحباً! كيف يمكنني مساعدتك اليوم؟..." rows="7"></textarea>
+    
+    <div class="file-input-container">
+      <label class="file-input-label" for="fileInput">
+        📎 رفع ملف (اختياري) - يدعم الصور، PDF، النصوص
+      </label>
+      <input type="file" id="fileInput" multiple>
+    </div>
+    
+    <button id="send-btn" onclick="sendPrompt()">🚀 إرسال الطلب</button>
+    
+    <div class="status" id="status"></div>
+    
+    <div id="response" style="display: none;"></div>
+    
+    <div class="button-group" id="action-buttons" style="display: none;">
+      <button onclick="copyResponse()">📋 نسخ الرد</button>
+      <button onclick="saveResponse()">💾 حفظ الرد</button>
+      <button onclick="clearChat()">🗑️ مسح المحادثة</button>
+    </div>
+  </div>
 
-<h1>Unité 555 - واجهة الذكاء الصناعي</h1>
-
-<label>اختر المودال:</label>
-<select id="model">
-  <option value="meta-llama/llama-3.3-8b-instruct">LLaMA 3.3 8B (Free)</option>
-  <option value="nousresearch/deephermes-3-mistral-24b-preview">DeepHermes 24B (Free)</option>
-  <option value="deepseek/deepseek-prover-v2">DeepSeek Prover (Free)</option>
-  <option value="qwen/qwen3-32b">Qwen 3 32B (Free)</option>
-  <option value="google/gemma-3n-e4b-it">Gemma 3N (Free)</option>
-  <option value="qwen/qwen-turbo">Qwen Turbo (Paid)</option>
-  <option value="openai/gpt-4o-mini">GPT-4o Mini (Paid)</option>
-  <option value="anthropic/claude-3-opus">Claude 3 Opus (Paid)</option>
-  <option value="anthropic/claude-3.7-sonnet">Claude 3.7 Sonnet (Paid)</option>
-  <option value="google/gemini-2.5-pro-preview">Gemini 2.5 Pro (Paid)</option>
-</select>
-
-<textarea id="prompt" placeholder="اكتب سؤالك هنا..." rows="5"></textarea>
-<button onclick="sendPrompt()">إرسال</button>
-<input type="file" id="fileInput">
-<div id="response"></div>
-<button onclick="copyResponse()">📋 نسخ الرد</button>
-<button onclick="saveResponse()">💾 حفظ الرد</button>
-
-<script>
-const apiKeys = {
-  "meta-llama/llama-3.3-8b-instruct": "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",
-  "nousresearch/deephermes-3-mistral-24b-preview": "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",
-  "deepseek/deepseek-prover-v2": "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",
-  "qwen/qwen3-32b": "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",
-  "google/gemma-3n-e4b-it": "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",
-  "qwen/qwen-turbo": "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",
-  "openai/gpt-4o-mini": "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",
-  "anthropic/claude-3-opus": "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",
-  "anthropic/claude-3.7-sonnet": "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",
-  "google/gemini-2.5-pro-preview": "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"
-};
-
-let history = [];
-
-async function sendPrompt() {
-  const model = document.getElementById("model").value;
-  const prompt = document.getElementById("prompt").value;
-  const key = apiKeys[model];
-  if (!prompt) return;
-
-  history.push({ role: "user", content: prompt });
-
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${key}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: history
-    })
-  });
-  const data = await res.json();
-  const content = data.choices[0].message.content;
-  history.push({ role: "assistant", content });
-  document.getElementById("response").innerText = content;
-}
-
-function copyResponse() {
-  const text = document.getElementById("response").innerText;
-  navigator.clipboard.writeText(text);
-  alert("تم نسخ الرد.");
-}
-
-function saveResponse() {
-  const text = document.getElementById("response").innerText;
-  const blob = new Blob([text], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "response.txt";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-</script>
+  <script>
+    const apiKeys = {
+      "meta-llama/llama-3.3-8b-instruct": "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",
+      "nousresearch/deephermes-3-mistral-24b-preview": "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",
+      "deepseek/deepseek-prover-v2": "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",
+      "qwen/qwen3-32b": "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",
+      "google/gemma-3n-e4b-it": "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",
+      "qwen/qwen-turbo": "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",
+      "openai/gpt-4o-mini": "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",
+      "anthropic/claude-3-opus": "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",
+      "anthropic/claude-3.7-sonnet": "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",
+      "google/gemini-2.5-pro-preview": "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"
+    };
+    
+    const modelInfo = {
+      "meta-llama/llama-3.3-8b-instruct": { type: "free", size: "8B" },
+      "nousresearch/deephermes-3-mistral-24b-preview": { type: "free", size: "24B" },
+      "deepseek/deepseek-prover-v2": { type: "free", size: "72B" },
+      "qwen/qwen3-32b": { type: "free", size: "32B" },
+      "google/gemma-3n-e4b-it": { type: "free", size: "3B" },
+      "qwen/qwen-turbo": { type: "paid", size: "7B" },
+      "openai/gpt-4o-mini": { type: "paid", size: "12B" },
+      "anthropic/claude-3-opus": { type: "paid", size: "175B" },
+      "anthropic/claude-3.7-sonnet": { type: "paid", size: "137B" },
+      "google/gemini-2.5-pro-preview": { type: "paid", size: "175B" }
+    };
+    
+    let history = [];
+    let files = [];
+    
+    // تحديث معلومات النموذج عند التغيير
+    document.getElementById('model').addEventListener('change', function() {
+      const model = this.value;
+      const info = modelInfo[model];
+      
+      document.getElementById('model-type').textContent = info.type === "free" ? "مجاني" : "مدفوع";
+      document.getElementById('model-type').className = info.type;
+      document.getElementById('model-size').textContent = `الحجم: ${info.size}`;
+    });
+    
+    // إدارة رفع الملفات
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      files = Array.from(e.target.files);
+      updateFileStatus();
+    });
+    
+    function updateFileStatus() {
+      const status = document.getElementById('status');
+      if (files.length > 0) {
+        status.innerHTML = `تم اختيار ${files.length} ملف(ات):<br>${files.map(f => f.name).join('<br>')}`;
+      } else {
+        status.innerHTML = '';
+      }
+    }
+    
+    async function sendPrompt() {
+      const model = document.getElementById('model').value;
+      const prompt = document.getElementById('prompt').value;
+      const key = apiKeys[model];
+      const sendBtn = document.getElementById('send-btn');
+      const status = document.getElementById('status');
+      const responseDiv = document.getElementById('response');
+      const actionButtons = document.getElementById('action-buttons');
+      
+      if (!prompt.trim()) {
+        status.innerHTML = '⚠️ الرجاء إدخال نص السؤال أولاً';
+        return;
+      }
+      
+      // إعداد واجهة المستخدم أثناء الانتظار
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '⏳ جاري المعالجة...';
+      status.innerHTML = '🔍 جاري تحليل طلبك، الرجاء الانتظار...';
+      status.classList.add('loading');
+      responseDiv.style.display = 'none';
+      actionButtons.style.display = 'none';
+      
+      try {
+        // إعداد محتوى الرسالة
+        const messageContent = files.length > 0 ? 
+          `${prompt}\n\n[ملفات مرفقة: ${files.length} ملف(ات)]` : 
+          prompt;
+        
+        history.push({ role: "user", content: messageContent });
+        
+        // إعداد بيانات الطلب
+        const requestData = {
+          model: model,
+          messages: history
+        };
+        
+        // إضافة الملفات إذا وجدت
+        if (files.length > 0) {
+          const formData = new FormData();
+          formData.append('data', JSON.stringify(requestData));
+          
+          files.forEach((file, index) => {
+            formData.append(`file_${index}`, file);
+          });
+          
+          // إرسال الطلب مع الملفات
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${key}` },
+            body: formData
+          });
+          
+          const data = await res.json();
+          handleResponse(data);
+        } else {
+          // إرسال الطلب بدون ملفات
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${key}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          const data = await res.json();
+          handleResponse(data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        status.innerHTML = `❌ حدث خطأ: ${error.message}`;
+        status.classList.remove('loading');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '🚀 إرسال الطلب';
+      }
+      
+      function handleResponse(data) {
+        if (data.choices && data.choices.length > 0) {
+          const content = data.choices[0].message.content;
+          history.push({ role: "assistant", content });
+          
+          responseDiv.innerText = content;
+          responseDiv.style.display = 'block';
+          actionButtons.style.display = 'flex';
+          
+          status.innerHTML = '✅ تم استلام الرد بنجاح';
+          status.classList.remove('loading');
+        } else {
+          status.innerHTML = '❌ لم يتم استلام رد صالح من الخادم';
+          status.classList.remove('loading');
+        }
+      }
+    }
+    
+    function copyResponse() {
+      const text = document.getElementById('response').innerText;
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          const status = document.getElementById('status');
+          status.innerHTML = '✔️ تم نسخ الرد إلى الحافظة';
+          setTimeout(() => status.innerHTML = '', 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy:', err);
+        });
+    }
+    
+    function saveResponse() {
+      const text = document.getElementById('response').innerText;
+      const model = document.getElementById('model').value.replace(/\//g, '-');
+      const date = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `Unite555-${model}-${date}.txt`;
+      
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      const status = document.getElementById('status');
+      status.innerHTML = '💾 تم حفظ الرد بنجاح';
+      setTimeout(() => status.innerHTML = '', 2000);
+    }
+    
+    function clearChat() {
+      history = [];
+      files = [];
+      document.getElementById('prompt').value = '';
+      document.getElementById('response').innerText = '';
+      document.getElementById('response').style.display = 'none';
+      document.getElementById('action-buttons').style.display = 'none';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('status').innerHTML = '🗑️ تم مسح المحادثة';
+      setTimeout(() => document.getElementById('status').innerHTML = '', 2000);
+    }
+    
+    // تحديث معلومات النموذج عند التحميل
+    window.addEventListener('DOMContentLoaded', () => {
+      const modelSelect = document.getElementById('model');
+      modelSelect.dispatchEvent(new Event('change'));
+    });
+  </script>
 </body>
 </html>
